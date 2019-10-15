@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    volumes:
+      - ./:/usr/share/nginx/html
+
+  nginx:
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+      - "8443:443"
+    volumes:
+      - ./:/usr/share/nginx/html
+      - .local/nginx:/etc/nginx/conf.d
+
+  mysql:
+    image: mariadb
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: $MYSQL_DATABASE
+      MYSQL_ROOT_PASSWORD: $MYSQL_DATABASE
+    volumes:
+      - .data:/var/lib/mysql
+
+volumes:
+  .data:
+    driver: local
